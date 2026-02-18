@@ -254,6 +254,165 @@
         .req-name { font-size: 0.88rem; font-weight: 700; color: #0f172a; margin-bottom: 3px; }
         .req-desc { font-size: 0.8rem; color: var(--slate-700); line-height: 1.65; }
 
+        /* ── Bulk Import ── */
+        .bulk-import-area {
+            display: flex;
+            gap: 10px;
+            align-items: flex-start;
+        }
+        .bulk-import-area textarea {
+            flex: 1;
+            padding: 10px 12px;
+            border: 1.5px solid var(--slate-300);
+            border-radius: 7px;
+            font-size: 0.88rem;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            color: #0f172a;
+            background: white;
+            resize: vertical;
+            min-height: 44px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+        .bulk-import-area textarea:focus {
+            outline: none;
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .bulk-import-area textarea::placeholder {
+            color: var(--slate-500);
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        .import-btn {
+            padding: 10px 18px;
+            background: linear-gradient(135deg, #059669, #10b981);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            white-space: nowrap;
+            box-shadow: 0 2px 8px rgba(5,150,105,0.25);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .import-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(5,150,105,0.35);
+        }
+        .import-btn:active { transform: translateY(0); }
+
+        .import-feedback {
+            margin-top: 10px;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.83rem;
+            display: none;
+        }
+        .import-feedback.success {
+            background: var(--green-100);
+            color: var(--green-700);
+            border-left: 3px solid var(--green-700);
+        }
+        .import-feedback.error {
+            background: var(--red-100);
+            color: #991b1b;
+            border-left: 3px solid var(--red-600);
+        }
+
+        .or-divider {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+            margin: 6px 0 14px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            color: var(--slate-500);
+        }
+        .or-divider::before,
+        .or-divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--slate-300);
+        }
+
+        /* ── Help Section ── */
+        .help-details {
+            margin-top: 14px;
+        }
+        .help-details summary {
+            cursor: pointer;
+            font-size: 0.82rem;
+            font-weight: 600;
+            color: var(--blue-700);
+            list-style: none;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 0;
+        }
+        .help-details summary::-webkit-details-marker { display: none; }
+        .help-details summary::before {
+            content: '\25B6';
+            font-size: 0.6rem;
+            transition: transform 0.2s;
+        }
+        .help-details[open] summary::before {
+            transform: rotate(90deg);
+        }
+        .help-steps {
+            margin-top: 12px;
+            padding: 14px 16px;
+            background: var(--slate-100);
+            border-radius: 8px;
+            border: 1px solid var(--slate-300);
+        }
+        .help-steps ol {
+            margin: 0;
+            padding-left: 20px;
+            font-size: 0.83rem;
+            color: var(--slate-700);
+            line-height: 1.8;
+        }
+        .help-steps ol li { margin-bottom: 4px; }
+        .help-steps ol li strong { color: #0f172a; }
+
+        .code-block-wrap {
+            margin-top: 10px;
+            position: relative;
+        }
+        .code-block-wrap pre {
+            background: #1e293b;
+            color: #e2e8f0;
+            padding: 14px 16px;
+            border-radius: 8px;
+            font-size: 0.75rem;
+            line-height: 1.6;
+            overflow-x: auto;
+            white-space: pre;
+            font-family: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+            max-height: 400px;
+        }
+        .copy-code-btn {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            padding: 4px 10px;
+            background: rgba(255,255,255,0.12);
+            color: #94a3b8;
+            border: 1px solid rgba(255,255,255,0.15);
+            border-radius: 5px;
+            font-size: 0.72rem;
+            cursor: pointer;
+            transition: background 0.2s, color 0.2s;
+        }
+        .copy-code-btn:hover {
+            background: rgba(255,255,255,0.22);
+            color: white;
+        }
+
         /* ── Responsive ── */
         @media (max-width: 620px) {
             .table-header { display: none; }
@@ -311,10 +470,95 @@
         </button>
 
         <div class="error-banner" id="errorBanner"></div>
+
+        <div class="or-divider">or bulk import</div>
+
+        <!-- ── Bulk Import ── -->
+        <div class="card-subtitle" style="margin-bottom:10px;">
+            Paste academic grades as a <strong>comma-separated list</strong> (e.g. <code style="color:var(--slate-300);font-weight:400;">3.7, 3.5, 4.0, 3.2, 3.8, 3.6, 3.5</code>).
+        </div>
+        <div style="padding:8px 12px;background:var(--amber-100);border-left:3px solid var(--amber-700);border-radius:6px;margin-bottom:12px;font-size:0.8rem;color:var(--amber-700);line-height:1.6;">
+            <strong>Note:</strong> Bulk import sets <strong>Effort</strong> to <strong>1 (Excellent)</strong> and <strong>Conduct</strong> to <strong>4 (A)</strong> by default. Review and adjust these values for each course after importing if needed.
+        </div>
+
+        <div class="bulk-import-area">
+            <textarea id="bulkGrades" rows="2" placeholder="3.7, 3.5, 4.0, 3.2, 3.8, 3.6, 3.5"></textarea>
+            <button class="import-btn" onclick="importBulkGrades()">Import</button>
+        </div>
+        <div class="import-feedback" id="importFeedback"></div>
+
+        <!-- ── Help: How to get grades ── -->
+        <details class="help-details">
+            <summary>How to get your grades from Gradebook</summary>
+            <div class="help-steps">
+                <ol>
+                    <li>Go to <a href="https://www.dadeschools.net/resources" target="_blank" rel="noopener" style="color:var(--blue-700);font-weight:600;">dadeschools.net/resources</a>.</li>
+                    <li>Click <strong>Portal</strong> &rarr; <strong>Parents</strong>.</li>
+                    <li>Sign in using <strong>Google Sign-In</strong> or <strong>Apple Sign-In</strong>.</li>
+                    <li>Click <strong>Gradebook</strong> to open your grades.</li>
+                    <li>Press <strong>F12</strong> (or right-click &rarr; Inspect) to open Developer Tools.</li>
+                    <li>Go to the <strong>Console</strong> tab.</li>
+                    <li>Paste the script below and press <strong>Enter</strong>.</li>
+                    <li>The comma-separated GPA list will be <strong>copied to your clipboard</strong>.</li>
+                    <li>Come back here and <strong>paste</strong> it into the box above, then click <strong>Import</strong>.</li>
+                </ol>
+
+                <div class="code-block-wrap">
+                    <button class="copy-code-btn" onclick="copyScriptToClipboard(this)">Copy</button>
+                    <pre id="gradebookScript">// PARAMETER: Set which period to extract
+// 1 = 1st 9-Weeks, 2 = 2nd 9-Weeks, 3 = 3rd 9-Weeks, 4 = 4th
+const periodIndex = 1;  // Change this: 1, 2, 3, or 4
+
+const gradesData = [];
+
+document.querySelectorAll('div.grid &gt; div.row').forEach(row =&gt; {
+  const course  = row.querySelector('span.course')?.textContent.trim();
+  const teacher = row.querySelector('div.teacher')?.textContent.trim();
+
+  // Get ALL letter-containers for this course
+  const allGrades = row.querySelectorAll('a.letter-container');
+
+  // Reverse to get chronological order
+  const reversedGrades = Array.from(allGrades).reverse();
+
+  // Select based on periodIndex
+  if (reversedGrades[periodIndex - 1]) {
+    const gradeContainer = reversedGrades[periodIndex - 1];
+    const gpa = gradeContainer.querySelector('span.percent')
+      ?.textContent.trim() || 'N/A';
+    const period = gradeContainer.querySelector('div.letter-label')
+      ?.textContent.trim();
+
+    // Only add if GPA is numeric (ignore N/A)
+    if (gpa !== 'N/A' &amp;&amp; !isNaN(parseFloat(gpa))) {
+      gradesData.push({ course, teacher, period, gpa });
+    }
+  }
+});
+
+// Display as table
+console.table(gradesData);
+
+// Create comma-separated list
+const gpaList = gradesData.map(g =&gt; g.gpa).join(',');
+
+console.log(
+  '\n\uD83D\uDCCB Comma-separated GPAs (Period ' + periodIndex + '):'
+);
+console.log(gpaList);
+
+// Copy to clipboard
+copy(gpaList);
+alert(
+  'Period ' + periodIndex + ' GPA list copied!\n\n' + gpaList
+);</pre>
+                </div>
+            </div>
+        </details>
     </div>
 
     <!-- ── Action ── -->
-    <button class="calc-btn" onclick="calculate()">Calculate Honor Roll</button>
+    <button class="calc-btn" style="margin-bottom:28px;" onclick="calculate()">Calculate Honor Roll</button>
 
     <!-- ── Result (hidden until calculated) ── -->
     <div id="resultContainer" style="margin-top:20px; display:none;"></div>
@@ -586,6 +830,68 @@
                     <span class="criterion-icon">${pass ? '&#10003;' : '&#10007;'}</span>
                     <span>${label}</span>
                 </div>`;
+    }
+
+    /* ─── Bulk import ─── */
+
+    function importBulkGrades() {
+        const feedback = document.getElementById('importFeedback');
+        const raw = document.getElementById('bulkGrades').value.trim();
+
+        if (!raw) {
+            showFeedback(feedback, 'Please paste a comma-separated list of grades.', false);
+            return;
+        }
+
+        const values = raw.split(/[,\s]+/).map(s => s.trim()).filter(s => s !== '');
+        const grades = [];
+
+        for (let i = 0; i < values.length; i++) {
+            const num = parseFloat(values[i]);
+            if (isNaN(num) || !isValidAcademic(num)) {
+                showFeedback(feedback, `Invalid grade "${values[i]}" at position ${i + 1}. Each value must be 2.0–4.0 or a percentage 50–100.`, false);
+                return;
+            }
+            grades.push(num);
+        }
+
+        if (grades.length === 0) {
+            showFeedback(feedback, 'No valid grades found in the input.', false);
+            return;
+        }
+
+        // Clear existing rows
+        document.getElementById('coursesContainer').innerHTML = '';
+        nextId = 1;
+
+        // Add a row per grade
+        grades.forEach((grade, i) => {
+            addCourse();
+            const row = document.getElementById(`row-${nextId - 1}`);
+            row.querySelector('.col-name').value = `Course ${i + 1}`;
+            row.querySelector('.col-academic').value = grade;
+            row.querySelector('.col-effort').value = '1';
+            row.querySelector('.col-conduct').value = '4';
+        });
+
+        document.getElementById('bulkGrades').value = '';
+        showFeedback(feedback, `Successfully imported ${grades.length} course grade${grades.length > 1 ? 's' : ''}. Review effort and conduct grades, then calculate.`, true);
+    }
+
+    function showFeedback(el, msg, success) {
+        el.textContent = msg;
+        el.className = 'import-feedback ' + (success ? 'success' : 'error');
+        el.style.display = 'block';
+    }
+
+    function copyScriptToClipboard(btn) {
+        const pre = document.getElementById('gradebookScript');
+        // Decode HTML entities back to real JS
+        const text = pre.textContent;
+        navigator.clipboard.writeText(text).then(() => {
+            btn.textContent = 'Copied!';
+            setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
+        });
     }
 
     /* ─── Init ─── */
