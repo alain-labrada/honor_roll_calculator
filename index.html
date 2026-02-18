@@ -475,14 +475,14 @@
 
         <!-- ── Bulk Import ── -->
         <div class="card-subtitle" style="margin-bottom:10px;">
-            Paste academic grades as a <strong>comma-separated list</strong> (e.g. <code>92,87.5,95,88,91,100,85</code>).
+            Paste academic grades as a <strong>comma-separated list</strong> (e.g. <code style="color:var(--slate-300);font-weight:400;">3.7, 3.5, 4.0, 3.2, 3.8, 3.6, 3.5</code>).
         </div>
         <div style="padding:8px 12px;background:var(--amber-100);border-left:3px solid var(--amber-700);border-radius:6px;margin-bottom:12px;font-size:0.8rem;color:var(--amber-700);line-height:1.6;">
             <strong>Note:</strong> Bulk import sets <strong>Effort</strong> to <strong>1 (Excellent)</strong> and <strong>Conduct</strong> to <strong>4 (A)</strong> by default. Review and adjust these values for each course after importing if needed.
         </div>
 
         <div class="bulk-import-area">
-            <textarea id="bulkGrades" rows="2" placeholder="92, 87.5, 95, 88, 91, 100, 85"></textarea>
+            <textarea id="bulkGrades" rows="2" placeholder="3.7, 3.5, 4.0, 3.2, 3.8, 3.6, 3.5"></textarea>
             <button class="import-btn" onclick="importBulkGrades()">Import</button>
         </div>
         <div class="import-feedback" id="importFeedback"></div>
@@ -558,7 +558,7 @@ alert(
     </div>
 
     <!-- ── Action ── -->
-    <button class="calc-btn" onclick="calculate()">Calculate Honor Roll</button>
+    <button class="calc-btn" style="margin-bottom:28px;" onclick="calculate()">Calculate Honor Roll</button>
 
     <!-- ── Result (hidden until calculated) ── -->
     <div id="resultContainer" style="margin-top:20px; display:none;"></div>
