@@ -290,7 +290,7 @@
             <strong>Academic grade:</strong> enter <strong>2.0 – 4.0</strong>, or as a percentage <strong>50 – 100</strong>
             (values above 4 are automatically converted: 100 = 4.0, 87.5 = 3.5, 75 = 3.0, 50 = 2.0).<br>
             <strong>Effort:</strong> 1 = Excellent &bull; 2 = Good &bull; 3 = Satisfactory.&nbsp;&nbsp;
-            <strong>Conduct:</strong> 4 = Excellent &bull; 3 = Good &bull; 2 = Satisfactory.
+            <strong>Conduct:</strong> 4 = A &bull; 3 = B &bull; 2 = C.
         </div>
 
         <div class="table-header col-widths">
@@ -395,9 +395,9 @@
             </select>
             <select class="col-conduct" aria-label="Conduct grade">
                 <option value="">— Conduct —</option>
-                <option value="4">4 — Excellent</option>
-                <option value="3">3 — Good</option>
-                <option value="2">2 — Satisfactory</option>
+                <option value="4">4 — A</option>
+                <option value="3">3 — B</option>
+                <option value="2">2 — C</option>
             </select>
             <button class="remove-btn" onclick="removeCourse(${id})" title="Remove" aria-label="Remove course">&#x2715;</button>
         `;
@@ -463,8 +463,8 @@
         const effort  = courses.map(c => c.effort);
         const conduct = courses.map(c => c.conduct);
 
-        const academicAvg = avg(acad);
-        const conductAvg  = avg(conduct);
+        const academicAvg = Math.round(avg(acad)    * 100) / 100;
+        const conductAvg  = Math.round(avg(conduct) * 100) / 100;
         const below3Count = acad.filter(g => g < 3).length;
 
         const checks = {
