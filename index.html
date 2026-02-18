@@ -1,0 +1,590 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Honor Roll Calculator</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --blue-900: #1e3a5f;
+            --blue-700: #1d4ed8;
+            --blue-500: #3b82f6;
+            --blue-100: #dbeafe;
+            --slate-700: #334155;
+            --slate-500: #64748b;
+            --slate-300: #cbd5e1;
+            --slate-100: #f1f5f9;
+            --red-600: #dc2626;
+            --red-100: #fee2e2;
+            --green-700: #15803d;
+            --green-100: #dcfce7;
+            --amber-700: #b45309;
+            --amber-100: #fef3c7;
+            --orange-700: #c2410c;
+            --orange-100: #ffedd5;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--slate-100);
+            color: #0f172a;
+            min-height: 100vh;
+            line-height: 1.5;
+        }
+
+        /* ── Header ── */
+        .header {
+            background: linear-gradient(135deg, #1e3a5f 0%, #1d4ed8 100%);
+            color: white;
+            padding: 30px 20px;
+            text-align: center;
+        }
+        .header h1 { font-size: clamp(1.5rem, 4vw, 2.2rem); font-weight: 800; letter-spacing: -0.5px; }
+        .header p  { margin-top: 8px; font-size: 0.95rem; opacity: 0.8; }
+
+        /* ── Layout ── */
+        .container { max-width: 900px; margin: 0 auto; padding: 28px 16px 60px; }
+
+        /* ── Card ── */
+        .card {
+            background: white;
+            border-radius: 14px;
+            box-shadow: 0 1px 4px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.06);
+            padding: 24px;
+            margin-bottom: 20px;
+        }
+        .card-title    { font-size: 1rem; font-weight: 700; color: #0f172a; margin-bottom: 6px; }
+        .card-subtitle { font-size: 0.82rem; color: var(--slate-500); margin-bottom: 18px; line-height: 1.6; }
+
+        /* ── Course table ── */
+        .col-widths { grid-template-columns: minmax(130px,1fr) 150px 120px 120px 36px; }
+
+        .table-header {
+            display: grid;
+            gap: 8px;
+            padding: 0 8px 10px;
+            border-bottom: 1px solid var(--slate-300);
+            margin-bottom: 6px;
+        }
+        .table-header span {
+            font-size: 0.72rem;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            color: var(--slate-500);
+        }
+
+        .course-row {
+            display: grid;
+            gap: 8px;
+            align-items: center;
+            padding: 6px 8px;
+            border-radius: 8px;
+            transition: background 0.15s;
+        }
+        .course-row:hover { background: #f8fafc; }
+
+        .course-row input,
+        .course-row select {
+            width: 100%;
+            padding: 8px 10px;
+            border: 1.5px solid var(--slate-300);
+            border-radius: 7px;
+            font-size: 0.88rem;
+            color: #0f172a;
+            background: white;
+            transition: border-color 0.2s, box-shadow 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+        }
+        .course-row select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%2364748b' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 28px;
+        }
+        .course-row input:focus,
+        .course-row select:focus {
+            outline: none;
+            border-color: var(--blue-500);
+            box-shadow: 0 0 0 3px rgba(59,130,246,0.12);
+        }
+        .course-row input.field-error { border-color: var(--red-600); background: #fff5f5; }
+
+        .remove-btn {
+            background: none;
+            border: none;
+            width: 30px; height: 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            color: var(--slate-300);
+            font-size: 1rem;
+            display: flex; align-items: center; justify-content: center;
+            transition: color 0.2s, background 0.2s;
+            flex-shrink: 0;
+        }
+        .remove-btn:hover { color: var(--red-600); background: var(--red-100); }
+
+        .add-btn {
+            display: flex; align-items: center; justify-content: center; gap: 6px;
+            width: 100%; padding: 10px; margin-top: 10px;
+            background: none;
+            border: 2px dashed var(--slate-300);
+            border-radius: 8px;
+            color: var(--slate-500);
+            font-size: 0.88rem; font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .add-btn:hover { border-color: var(--blue-500); color: var(--blue-500); background: var(--blue-100); }
+
+        /* ── Calculate button ── */
+        .calc-btn {
+            width: 100%; padding: 14px;
+            background: linear-gradient(135deg, #1d4ed8, #3b82f6);
+            color: white; border: none; border-radius: 10px;
+            font-size: 1rem; font-weight: 700; letter-spacing: 0.3px;
+            cursor: pointer;
+            box-shadow: 0 4px 14px rgba(29,78,216,0.3);
+            transition: transform 0.15s, box-shadow 0.15s;
+        }
+        .calc-btn:hover { transform: translateY(-1px); box-shadow: 0 6px 18px rgba(29,78,216,0.4); }
+        .calc-btn:active { transform: translateY(0); }
+
+        /* ── Error banner ── */
+        .error-banner {
+            padding: 10px 14px;
+            background: var(--red-100);
+            border-left: 3px solid var(--red-600);
+            border-radius: 6px;
+            font-size: 0.85rem; color: #991b1b;
+            margin-top: 12px;
+            display: none;
+        }
+
+        /* ── Result ── */
+        .result-wrapper {
+            border-radius: 14px;
+            overflow: hidden;
+            box-shadow: 0 4px 24px rgba(0,0,0,0.12);
+            margin-bottom: 20px;
+            animation: slideUp 0.35s ease;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(14px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        .result-hero {
+            padding: 32px 24px 0;
+            text-align: center;
+            color: white;
+        }
+        .result-hero.principal { background: linear-gradient(135deg, #78350f, #d97706, #fbbf24); }
+        .result-hero.superior  { background: linear-gradient(135deg, #1e293b, #475569, #94a3b8); }
+        .result-hero.honor     { background: linear-gradient(135deg, #7c2d12, #c2410c, #fb923c); }
+        .result-hero.none      { background: linear-gradient(135deg, #334155, #64748b); }
+
+        .result-icon  { font-size: 3.5rem; margin-bottom: 10px; }
+        .result-level { font-size: clamp(1.4rem, 4vw, 2rem); font-weight: 800; margin-bottom: 6px; }
+        .result-desc  { font-size: 0.95rem; opacity: 0.85; padding-bottom: 24px; }
+
+        .result-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            background: rgba(0,0,0,0.15);
+            margin-top: 0;
+        }
+        .stat {
+            padding: 14px 10px;
+            text-align: center;
+            border-right: 1px solid rgba(255,255,255,0.1);
+        }
+        .stat:last-child { border-right: none; }
+        .stat-label { font-size: 0.7rem; text-transform: uppercase; letter-spacing: 0.5px; opacity: 0.75; margin-bottom: 4px; }
+        .stat-val   { font-size: 1.4rem; font-weight: 800; }
+
+        /* ── Criteria ── */
+        .criteria-section { padding: 22px 24px; background: white; }
+        .criteria-title {
+            font-size: 0.78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.6px;
+            color: var(--slate-500); margin-bottom: 16px;
+        }
+        .criteria-group { margin-bottom: 18px; }
+        .criteria-group:last-child { margin-bottom: 0; }
+        .criteria-group-label {
+            font-size: 0.84rem; font-weight: 700; color: #0f172a;
+            margin-bottom: 8px;
+            display: flex; align-items: center; gap: 7px;
+        }
+        .level-dot {
+            width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0;
+        }
+        .dot-principal { background: #d97706; }
+        .dot-superior  { background: #64748b; }
+        .dot-honor     { background: #c2410c; }
+
+        .criterion {
+            display: flex; align-items: flex-start; gap: 8px;
+            padding: 6px 10px; border-radius: 6px;
+            font-size: 0.83rem; margin-bottom: 4px;
+        }
+        .criterion.pass { color: var(--green-700); background: var(--green-100); }
+        .criterion.fail { color: #991b1b; background: var(--red-100); }
+        .criterion-icon { font-weight: 900; flex-shrink: 0; margin-top: 1px; }
+
+        /* ── Requirements card ── */
+        .req-card h2 {
+            font-size: 0.78rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.6px;
+            color: var(--slate-500); margin-bottom: 14px;
+        }
+        .req-item {
+            display: flex; gap: 14px;
+            padding: 12px 14px; border-radius: 9px;
+            margin-bottom: 10px; border-left: 4px solid;
+        }
+        .req-item:last-child { margin-bottom: 0; }
+        .req-principal { background: var(--amber-100); border-color: #d97706; }
+        .req-superior  { background: var(--slate-100);  border-color: #64748b; }
+        .req-honor     { background: var(--orange-100); border-color: #c2410c; }
+        .req-name { font-size: 0.88rem; font-weight: 700; color: #0f172a; margin-bottom: 3px; }
+        .req-desc { font-size: 0.8rem; color: var(--slate-700); line-height: 1.65; }
+
+        /* ── Responsive ── */
+        @media (max-width: 620px) {
+            .table-header { display: none; }
+            .course-row {
+                grid-template-columns: 1fr 1fr !important;
+                border: 1px solid var(--slate-300);
+                border-radius: 10px;
+                padding: 12px;
+                margin-bottom: 10px;
+                background: white;
+                position: relative;
+            }
+            .course-row .col-name  { grid-column: 1 / -1; }
+            .remove-btn { position: absolute; top: 10px; right: 10px; }
+            .result-stats { grid-template-columns: 1fr; }
+            .stat { border-right: none; border-bottom: 1px solid rgba(255,255,255,0.1); }
+            .stat:last-child { border-bottom: none; }
+        }
+    </style>
+</head>
+<body>
+
+<header class="header">
+    <h1>Honor Roll Calculator</h1>
+    <p>Enter each course's academic, effort, and conduct grades to determine Honor Roll eligibility</p>
+</header>
+
+<div class="container">
+
+    <!-- ── Input Card ── -->
+    <div class="card">
+        <div class="card-title">Course Grades</div>
+        <div class="card-subtitle">
+            <strong>Academic grade:</strong> enter <strong>2.0 – 4.0</strong>, or as a percentage <strong>50 – 100</strong>
+            (values above 4 are automatically converted: 100 = 4.0, 87.5 = 3.5, 75 = 3.0, 50 = 2.0).<br>
+            <strong>Effort:</strong> 1 = Excellent &bull; 2 = Good &bull; 3 = Satisfactory.&nbsp;&nbsp;
+            <strong>Conduct:</strong> 4 = Excellent &bull; 3 = Good &bull; 2 = Satisfactory.
+        </div>
+
+        <div class="table-header col-widths">
+            <span>Course Name</span>
+            <span>Academic (2–4 or %)</span>
+            <span>Effort (1–3)</span>
+            <span>Conduct (2–4)</span>
+            <span></span>
+        </div>
+
+        <div id="coursesContainer"></div>
+
+        <button class="add-btn" onclick="addCourse()">
+            <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
+                <path d="M6.5 1v11M1 6.5h11" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+            Add Course
+        </button>
+
+        <div class="error-banner" id="errorBanner"></div>
+    </div>
+
+    <!-- ── Action ── -->
+    <button class="calc-btn" onclick="calculate()">Calculate Honor Roll</button>
+
+    <!-- ── Result (hidden until calculated) ── -->
+    <div id="resultContainer" style="margin-top:20px; display:none;"></div>
+
+    <!-- ── Requirements Reference ── -->
+    <div class="card req-card">
+        <h2>Honor Roll Requirements</h2>
+
+        <div class="req-item req-principal">
+            <div>
+                <div class="req-name">Principal Honor Roll</div>
+                <div class="req-desc">
+                    All academic grades &ge; 3.5 &nbsp;&bull;&nbsp;
+                    All effort grades = 1 &nbsp;&bull;&nbsp;
+                    All conduct grades = 4
+                </div>
+            </div>
+        </div>
+
+        <div class="req-item req-superior">
+            <div>
+                <div class="req-name">Superior Honor Roll</div>
+                <div class="req-desc">
+                    Academic average &ge; 3.7 &nbsp;&bull;&nbsp;
+                    No academic grade &lt; 3.5 &nbsp;&bull;&nbsp;
+                    All effort grades &le; 2 &nbsp;&bull;&nbsp;
+                    Conduct average &ge; 3.7
+                </div>
+            </div>
+        </div>
+
+        <div class="req-item req-honor">
+            <div>
+                <div class="req-name">Honor Roll</div>
+                <div class="req-desc">
+                    Academic average &ge; 3.5 &nbsp;&bull;&nbsp;
+                    At most 1 academic grade &lt; 3.0 &nbsp;&bull;&nbsp;
+                    All effort grades &le; 2 &nbsp;&bull;&nbsp;
+                    Conduct average &ge; 3.0
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div><!-- /container -->
+
+<script>
+    let nextId = 1;
+
+    /* ─── Conversion & validation ─── */
+
+    function toScale(raw) {
+        // Values > 4 are percentages; divide by 25 to map 50–100 → 2.0–4.0
+        return raw > 4 ? raw / 25 : raw;
+    }
+
+    function isValidAcademic(raw) {
+        return !isNaN(raw) && ((raw >= 2 && raw <= 4) || (raw >= 50 && raw <= 100));
+    }
+
+    /* ─── DOM helpers ─── */
+
+    function addCourse() {
+        const id = nextId++;
+        const div = document.createElement('div');
+        div.className = 'course-row col-widths';
+        div.id = `row-${id}`;
+        div.innerHTML = `
+            <input class="col-name" type="text" placeholder="Course name (optional)" aria-label="Course name" />
+            <input class="col-academic" type="number" placeholder="e.g. 3.7 or 92"
+                   min="2" max="100" step="0.01" aria-label="Academic grade"
+                   oninput="liveValidate(this)" />
+            <select class="col-effort" aria-label="Effort grade">
+                <option value="">— Effort —</option>
+                <option value="1">1 — Excellent</option>
+                <option value="2">2 — Good</option>
+                <option value="3">3 — Satisfactory</option>
+            </select>
+            <select class="col-conduct" aria-label="Conduct grade">
+                <option value="">— Conduct —</option>
+                <option value="4">4 — Excellent</option>
+                <option value="3">3 — Good</option>
+                <option value="2">2 — Satisfactory</option>
+            </select>
+            <button class="remove-btn" onclick="removeCourse(${id})" title="Remove" aria-label="Remove course">&#x2715;</button>
+        `;
+        document.getElementById('coursesContainer').appendChild(div);
+    }
+
+    function removeCourse(id) {
+        const allRows = document.querySelectorAll('.course-row');
+        if (allRows.length <= 1) return; // always keep at least one
+        const row = document.getElementById(`row-${id}`);
+        if (row) row.remove();
+    }
+
+    function liveValidate(input) {
+        if (input.value === '') { input.classList.remove('field-error'); return; }
+        input.classList.toggle('field-error', !isValidAcademic(parseFloat(input.value)));
+    }
+
+    /* ─── Calculation ─── */
+
+    function calculate() {
+        const banner = document.getElementById('errorBanner');
+        banner.style.display = 'none';
+
+        const rows = document.querySelectorAll('.course-row');
+        const courses = [];
+        let err = '';
+
+        rows.forEach((row, i) => {
+            if (err) return;
+            const label    = row.querySelector('.col-name').value.trim() || `Course ${i + 1}`;
+            const rawAcad  = parseFloat(row.querySelector('.col-academic').value);
+            const effort   = parseInt(row.querySelector('.col-effort').value,  10);
+            const conduct  = parseInt(row.querySelector('.col-conduct').value, 10);
+
+            if (isNaN(rawAcad) || isNaN(effort) || isNaN(conduct)) {
+                err = `"${label}": please fill in all three grade fields.`;
+                return;
+            }
+            if (!isValidAcademic(rawAcad)) {
+                err = `"${label}": academic grade must be 2.0–4.0 or a percentage 50–100.`;
+                return;
+            }
+            courses.push({ label, academic: toScale(rawAcad), effort, conduct });
+        });
+
+        if (err) {
+            banner.textContent = err;
+            banner.style.display = 'block';
+            return;
+        }
+        if (courses.length === 0) {
+            banner.textContent = 'Please add at least one course.';
+            banner.style.display = 'block';
+            return;
+        }
+
+        renderResult(computeResult(courses), courses);
+    }
+
+    function computeResult(courses) {
+        const acad    = courses.map(c => c.academic);
+        const effort  = courses.map(c => c.effort);
+        const conduct = courses.map(c => c.conduct);
+
+        const academicAvg = avg(acad);
+        const conductAvg  = avg(conduct);
+        const below3Count = acad.filter(g => g < 3).length;
+
+        const checks = {
+            principal: {
+                allAcad35:   acad.every(g => g >= 3.5),
+                allEffort1:  effort.every(e => e === 1),
+                allConduct4: conduct.every(c => c >= 4),
+            },
+            superior: {
+                avgGte37:     academicAvg >= 3.7,
+                noBelow349:   acad.every(g => g > 3.49),
+                effortLte2:   effort.every(e => e <= 2),
+                conductGte37: conductAvg >= 3.7,
+            },
+            honor: {
+                avgGte35:     academicAvg >= 3.5,
+                max1Below3:   below3Count <= 1,
+                effortLte2:   effort.every(e => e <= 2),
+                conductGte30: conductAvg >= 3.0,
+            },
+        };
+
+        let level;
+        if (allPass(checks.principal))       level = 'principal';
+        else if (allPass(checks.superior))   level = 'superior';
+        else if (allPass(checks.honor))      level = 'honor';
+        else                                 level = 'none';
+
+        return { level, checks, academicAvg, conductAvg, below3Count, courseCount: courses.length };
+    }
+
+    function avg(arr) { return arr.reduce((s, v) => s + v, 0) / arr.length; }
+    function allPass(obj) { return Object.values(obj).every(Boolean); }
+
+    /* ─── Rendering ─── */
+
+    function renderResult(r, courses) {
+        const container = document.getElementById('resultContainer');
+        container.style.display = 'block';
+
+        const meta = {
+            principal: { cls: 'principal', icon: '&#127885;', title: 'Principal Honor Roll', desc: 'Outstanding academic excellence — the highest distinction!' },
+            superior:  { cls: 'superior',  icon: '&#11088;',  title: 'Superior Honor Roll',  desc: 'Exceptional achievement with no grade below 3.5.' },
+            honor:     { cls: 'honor',     icon: '&#127942;', title: 'Honor Roll',            desc: 'Great academic performance — keep it up!' },
+            none:      { cls: 'none',      icon: '&#128203;', title: 'No Honor Roll',         desc: 'Review the criteria below to see what to improve.' },
+        }[r.level];
+
+        const { checks, academicAvg, conductAvg, below3Count, courseCount } = r;
+
+        container.innerHTML = `
+            <div class="result-wrapper">
+                <div class="result-hero ${meta.cls}">
+                    <div class="result-icon">${meta.icon}</div>
+                    <div class="result-level">${meta.title}</div>
+                    <div class="result-desc">${meta.desc}</div>
+                    <div class="result-stats">
+                        <div class="stat">
+                            <div class="stat-label">Academic Avg</div>
+                            <div class="stat-val">${academicAvg.toFixed(2)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Conduct Avg</div>
+                            <div class="stat-val">${conductAvg.toFixed(2)}</div>
+                        </div>
+                        <div class="stat">
+                            <div class="stat-label">Courses</div>
+                            <div class="stat-val">${courseCount}</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="criteria-section">
+                    <div class="criteria-title">Criteria Breakdown</div>
+
+                    <div class="criteria-group">
+                        <div class="criteria-group-label">
+                            <span class="level-dot dot-principal"></span>Principal Honor Roll
+                        </div>
+                        ${crit(checks.principal.allAcad35,   'All academic grades &ge; 3.5')}
+                        ${crit(checks.principal.allEffort1,  'All effort grades = 1 (Excellent)')}
+                        ${crit(checks.principal.allConduct4, 'All conduct grades = 4 (Excellent)')}
+                    </div>
+
+                    <div class="criteria-group">
+                        <div class="criteria-group-label">
+                            <span class="level-dot dot-superior"></span>Superior Honor Roll
+                        </div>
+                        ${crit(checks.superior.avgGte37,     `Academic average &ge; 3.7 &nbsp;<em>(yours: ${academicAvg.toFixed(2)})</em>`)}
+                        ${crit(checks.superior.noBelow349,   'No academic grade &lt; 3.5')}
+                        ${crit(checks.superior.effortLte2,   'All effort grades &le; 2')}
+                        ${crit(checks.superior.conductGte37, `Conduct average &ge; 3.7 &nbsp;<em>(yours: ${conductAvg.toFixed(2)})</em>`)}
+                    </div>
+
+                    <div class="criteria-group">
+                        <div class="criteria-group-label">
+                            <span class="level-dot dot-honor"></span>Honor Roll
+                        </div>
+                        ${crit(checks.honor.avgGte35,     `Academic average &ge; 3.5 &nbsp;<em>(yours: ${academicAvg.toFixed(2)})</em>`)}
+                        ${crit(checks.honor.max1Below3,   `At most 1 academic grade &lt; 3.0 &nbsp;<em>(you have: ${below3Count})</em>`)}
+                        ${crit(checks.honor.effortLte2,   'All effort grades &le; 2')}
+                        ${crit(checks.honor.conductGte30, `Conduct average &ge; 3.0 &nbsp;<em>(yours: ${conductAvg.toFixed(2)})</em>`)}
+                    </div>
+                </div>
+            </div>
+        `;
+
+        container.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+
+    function crit(pass, label) {
+        return `<div class="criterion ${pass ? 'pass' : 'fail'}">
+                    <span class="criterion-icon">${pass ? '&#10003;' : '&#10007;'}</span>
+                    <span>${label}</span>
+                </div>`;
+    }
+
+    /* ─── Init ─── */
+    addCourse();
+    addCourse();
+    addCourse();
+</script>
+</body>
+</html>
