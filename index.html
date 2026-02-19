@@ -590,9 +590,10 @@ alert(
                 <div class="req-name">Superior Honor Roll</div>
                 <div class="req-desc">
                     Academic average &ge; 3.7 &nbsp;&bull;&nbsp;
-                    No academic grade &lt; 3.5 &nbsp;&bull;&nbsp;
+                    No academic grade &lt; 3.0 &nbsp;&bull;&nbsp;
                     All effort grades &le; 2 &nbsp;&bull;&nbsp;
-                    Conduct average &ge; 3.7
+                    Conduct average &ge; 3.7 &nbsp;&bull;&nbsp;
+                    No conduct &le; 2
                 </div>
             </div>
         </div>
@@ -604,7 +605,8 @@ alert(
                     Academic average &ge; 3.5 &nbsp;&bull;&nbsp;
                     At most 1 academic grade &lt; 3.0 &nbsp;&bull;&nbsp;
                     All effort grades &le; 2 &nbsp;&bull;&nbsp;
-                    Conduct average &ge; 3.0
+                    Conduct average &ge; 3.0 &nbsp;&bull;&nbsp;
+                    No conduct &le; 2
                 </div>
             </div>
         </div>
@@ -725,16 +727,18 @@ alert(
                 allConduct4: conduct.every(c => c >= 4),
             },
             superior: {
-                avgGte37:     academicAvg >= 3.7,
-                noBelow349:   acad.every(g => g > 3.49),
-                effortLte2:   effort.every(e => e <= 2),
-                conductGte37: conductAvg >= 3.7,
+                avgGte37:       academicAvg >= 3.7,
+                noBelow349:     acad.every(g => g >= 3.0),
+                effortLte2:     effort.every(e => e <= 2),
+                conductGte37:   conductAvg >= 3.7,
+                noConduct2:     conduct.every(c => c > 2),
             },
             honor: {
-                avgGte35:     academicAvg >= 3.5,
-                max1Below3:   below3Count <= 1,
-                effortLte2:   effort.every(e => e <= 2),
-                conductGte30: conductAvg >= 3.0,
+                avgGte35:       academicAvg >= 3.5,
+                max1Below3:     below3Count <= 1,
+                effortLte2:     effort.every(e => e <= 2),
+                conductGte30:   conductAvg >= 3.0,
+                noConduct2:     conduct.every(c => c > 2),
             },
         };
 
@@ -804,9 +808,10 @@ alert(
                             <span class="level-dot dot-superior"></span>Superior Honor Roll
                         </div>
                         ${crit(checks.superior.avgGte37,     `Academic average &ge; 3.7 &nbsp;<em>(yours: ${academicAvg.toFixed(2)})</em>`)}
-                        ${crit(checks.superior.noBelow349,   'No academic grade &lt; 3.5')}
+                        ${crit(checks.superior.noBelow349,   'No academic grade &lt; 3.0')}
                         ${crit(checks.superior.effortLte2,   'All effort grades &le; 2')}
                         ${crit(checks.superior.conductGte37, `Conduct average &ge; 3.7 &nbsp;<em>(yours: ${conductAvg.toFixed(2)})</em>`)}
+                        ${crit(checks.superior.noConduct2,   'No conduct grade &le; 2')}
                     </div>
 
                     <div class="criteria-group">
@@ -817,6 +822,7 @@ alert(
                         ${crit(checks.honor.max1Below3,   `At most 1 academic grade &lt; 3.0 &nbsp;<em>(you have: ${below3Count})</em>`)}
                         ${crit(checks.honor.effortLte2,   'All effort grades &le; 2')}
                         ${crit(checks.honor.conductGte30, `Conduct average &ge; 3.0 &nbsp;<em>(yours: ${conductAvg.toFixed(2)})</em>`)}
+                        ${crit(checks.honor.noConduct2,   'No conduct grade &le; 2')}
                     </div>
                 </div>
             </div>
