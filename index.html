@@ -428,6 +428,109 @@
         }
         .print-btn:hover { border-color: var(--blue-500); color: var(--blue-700); background: var(--blue-100); }
 
+        /* ── Help link in header ── */
+        .help-link {
+            display: inline-flex; align-items: center; gap: 5px;
+            margin-top: 12px;
+            color: rgba(255,255,255,0.75);
+            font-size: 0.82rem; font-weight: 500;
+            cursor: pointer;
+            background: none; border: none;
+            text-decoration: underline; text-underline-offset: 3px;
+            transition: color 0.2s;
+        }
+        .help-link:hover { color: white; }
+
+        /* ── Modal ── */
+        .modal-backdrop {
+            position: fixed; inset: 0;
+            background: rgba(0,0,0,0.45);
+            display: flex; align-items: center; justify-content: center;
+            z-index: 1000;
+            padding: 16px;
+            opacity: 0; pointer-events: none;
+            transition: opacity 0.2s;
+        }
+        .modal-backdrop.open { opacity: 1; pointer-events: auto; }
+
+        .modal {
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.22);
+            width: 100%; max-width: 580px;
+            max-height: 88vh;
+            overflow-y: auto;
+            transform: translateY(16px);
+            transition: transform 0.25s;
+        }
+        .modal-backdrop.open .modal { transform: translateY(0); }
+
+        .modal-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 20px 24px 0;
+            position: sticky; top: 0; background: white;
+            border-bottom: 1px solid var(--slate-300);
+            padding-bottom: 14px;
+            z-index: 1;
+        }
+        .modal-header h2 { font-size: 1.05rem; font-weight: 800; }
+        .modal-close {
+            background: none; border: none; cursor: pointer;
+            color: var(--slate-500); font-size: 1.1rem;
+            width: 30px; height: 30px;
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            transition: background 0.2s, color 0.2s;
+        }
+        .modal-close:hover { background: var(--red-100); color: var(--red-600); }
+
+        .modal-body { padding: 20px 24px 24px; }
+
+        .help-section { margin-bottom: 22px; }
+        .help-section:last-child { margin-bottom: 0; }
+        .help-section-title {
+            font-size: 0.72rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.6px;
+            color: var(--slate-500); margin-bottom: 10px;
+        }
+        .help-step {
+            display: flex; gap: 12px; align-items: flex-start;
+            margin-bottom: 10px; font-size: 0.87rem; color: var(--slate-700);
+        }
+        .help-step-num {
+            flex-shrink: 0;
+            width: 22px; height: 22px;
+            background: var(--blue-700); color: white;
+            border-radius: 50%;
+            font-size: 0.7rem; font-weight: 700;
+            display: flex; align-items: center; justify-content: center;
+            margin-top: 1px;
+        }
+        .help-table {
+            width: 100%; border-collapse: collapse;
+            font-size: 0.84rem; margin-bottom: 4px;
+        }
+        .help-table th {
+            background: var(--slate-100); text-align: left;
+            padding: 7px 10px;
+            font-size: 0.7rem; font-weight: 700;
+            text-transform: uppercase; letter-spacing: 0.5px;
+            color: var(--slate-500);
+            border-bottom: 1px solid var(--slate-300);
+        }
+        .help-table td { padding: 7px 10px; border-bottom: 1px solid #f1f5f9; color: var(--slate-700); }
+        .help-table tr:last-child td { border-bottom: none; }
+
+        .help-level-row { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; }
+        .help-level-badge {
+            flex-shrink: 0; padding: 2px 9px; border-radius: 20px;
+            font-size: 0.72rem; font-weight: 700; white-space: nowrap; margin-top: 2px;
+        }
+        .badge-principal { background: var(--amber-100); color: var(--amber-700); }
+        .badge-superior  { background: var(--slate-100);  color: var(--slate-700); }
+        .badge-honor     { background: var(--orange-100); color: var(--orange-700); }
+        .help-level-desc { font-size: 0.83rem; color: var(--slate-700); line-height: 1.6; }
+
         /* ── Responsive ── */
         @media (max-width: 620px) {
             .table-header { display: none; }
@@ -453,7 +556,82 @@
 <header class="header">
     <h1>Honor Roll Calculator</h1>
     <p>Enter each course's academic, effort, and conduct grades to determine Honor Roll eligibility</p>
+    <button class="help-link" onclick="openHelp()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><line x1="12" y1="17" x2="12.01" y2="17"/>
+        </svg>
+        How to use this calculator
+    </button>
 </header>
+
+<!-- ── Help Modal ── -->
+<div class="modal-backdrop" id="helpModal" onclick="handleBackdropClick(event)">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="helpModalTitle">
+        <div class="modal-header">
+            <h2 id="helpModalTitle">How to Use</h2>
+            <button class="modal-close" onclick="closeHelp()" aria-label="Close help">&times;</button>
+        </div>
+        <div class="modal-body">
+
+            <div class="help-section">
+                <div class="help-section-title">Steps</div>
+                <div class="help-step">
+                    <div class="help-step-num">1</div>
+                    <div>Click <strong>Add Course</strong> to add a row for each subject. The course name is optional.</div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-num">2</div>
+                    <div>Fill in the <strong>Academic</strong>, <strong>Effort</strong>, and <strong>Conduct</strong> grade for each course.</div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-num">3</div>
+                    <div>Click <strong>Calculate Honor Roll</strong> to see your eligibility result and a full pass/fail breakdown.</div>
+                </div>
+                <div class="help-step">
+                    <div class="help-step-num">4</div>
+                    <div>Optionally click <strong>Print Report</strong> at the bottom of the result to open a formatted, print-ready summary.</div>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <div class="help-section-title">Grade Scales</div>
+                <table class="help-table">
+                    <thead><tr><th>Field</th><th>Values</th></tr></thead>
+                    <tbody>
+                        <tr><td><strong>Academic</strong></td><td>GPA <strong>2.0 – 4.0</strong>, or percentage <strong>50 – 100</strong> (auto-converted: 100&nbsp;=&nbsp;4.0, 75&nbsp;=&nbsp;3.0, 50&nbsp;=&nbsp;2.0)</td></tr>
+                        <tr><td><strong>Effort</strong></td><td><strong>1</strong> = Excellent &nbsp; <strong>2</strong> = Good &nbsp; <strong>3</strong> = Satisfactory</td></tr>
+                        <tr><td><strong>Conduct</strong></td><td><strong>4</strong> = A &nbsp; <strong>3</strong> = B &nbsp; <strong>2</strong> = C</td></tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="help-section">
+                <div class="help-section-title">Bulk Import</div>
+                <div style="font-size:0.85rem;color:var(--slate-700);line-height:1.65;">
+                    Paste a comma-separated list of academic grades (e.g. <code style="background:var(--slate-100);padding:1px 5px;border-radius:4px;">3.7, 3.5, 4.0, 3.2</code>) into the bulk import box and click <strong>Import</strong>. Effort and Conduct default to <strong>1</strong> and <strong>4</strong> respectively — review them before calculating.<br><br>
+                    Expand <strong>"How to get your grades from Gradebook"</strong> below the import box for a script that extracts grades automatically from the Miami-Dade portal.
+                </div>
+            </div>
+
+            <div class="help-section">
+                <div class="help-section-title">Honor Roll Levels</div>
+                <div class="help-level-row">
+                    <span class="help-level-badge badge-principal">Principal</span>
+                    <div class="help-level-desc">All academic &ge; 3.5 &nbsp;&bull;&nbsp; All effort = 1 &nbsp;&bull;&nbsp; All conduct = 4</div>
+                </div>
+                <div class="help-level-row">
+                    <span class="help-level-badge badge-superior">Superior</span>
+                    <div class="help-level-desc">Academic avg &ge; 3.7 &nbsp;&bull;&nbsp; No academic &lt; 3.0 &nbsp;&bull;&nbsp; All effort &le; 2 &nbsp;&bull;&nbsp; Conduct avg &ge; 3.7 &nbsp;&bull;&nbsp; No conduct &le; 2</div>
+                </div>
+                <div class="help-level-row">
+                    <span class="help-level-badge badge-honor">Honor</span>
+                    <div class="help-level-desc">Academic avg &ge; 3.5 &nbsp;&bull;&nbsp; At most 1 academic &lt; 3.0 &nbsp;&bull;&nbsp; All effort &le; 2 &nbsp;&bull;&nbsp; Conduct avg &ge; 3.0 &nbsp;&bull;&nbsp; No conduct &le; 2</div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
 
 <div class="container">
 
@@ -1047,6 +1225,24 @@ alert(
             setTimeout(() => { btn.textContent = 'Copy'; }, 2000);
         });
     }
+
+    /* ─── Help modal ─── */
+
+    function openHelp() {
+        document.getElementById('helpModal').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeHelp() {
+        document.getElementById('helpModal').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    function handleBackdropClick(e) {
+        if (e.target === document.getElementById('helpModal')) closeHelp();
+    }
+
+    document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHelp(); });
 
     /* ─── Init ─── */
     addCourse();
