@@ -1,0 +1,29 @@
+name: Deploy to Hostinger (FTP)
+
+on:
+  push:
+    branches: ["main"]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # If your repo has a subfolder that is the website root, tell me and we’ll set local-dir.
+      - name: Upload via FTP to public_html
+        uses: SamKirkland/FTP-Deploy-Action@v4.3.5
+        with:
+          server: ${{ secrets.HOSTINGER_FTP_SERVER }}
+          username: ${{ secrets.HOSTINGER_FTP_USERNAME }}
+          password: ${{ secrets.HOSTINGER_FTP_PASSWORD }}
+          port: ${{ secrets.HOSTINGER_FTP_PORT || 21 }}
+          protocol: ftp
+          server-dir: /public_html/
+          # local-dir: ./   # default is repo root
+          exclude: |
+            **/.git*
+            **/.github/**
+            **/README*
